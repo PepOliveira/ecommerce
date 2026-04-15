@@ -2,9 +2,12 @@ package com.pedrooliveira.ecommerce.controller;
 
 import com.pedrooliveira.ecommerce.model.Produto;
 import com.pedrooliveira.ecommerce.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,13 +19,14 @@ public class ProdutoController {
     private ProdutoService produtoService;
 
     @PostMapping
-    public ResponseEntity<Produto> salvar(@RequestBody Produto produto) {
+    public ResponseEntity<Produto> salvar(@Valid @RequestBody Produto produto) {
         return ResponseEntity.ok(produtoService.salvar(produto));
     }
 
+
     @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+    public ResponseEntity<Page<Produto>> listarTodos(Pageable pageable) {
+        return ResponseEntity.ok(produtoService.listarTodos(pageable));
     }
 
     @GetMapping("/{id}")
@@ -37,8 +41,23 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @RequestBody Produto produto) {
+    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @Valid @RequestBody Produto produto) {
         return ResponseEntity.ok(produtoService.atualizar(id, produto));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<Produto>> buscarPorNome(
+            @RequestParam String nome,
+            Pageable pageable) {
+        return ResponseEntity.ok(produtoService.buscarPorNome(nome, pageable));
+    }
+
+    @GetMapping("/preco")
+    public ResponseEntity<Page<Produto>> buscarPorPreco(
+            @RequestParam Double precoMin,
+            @RequestParam Double precoMax,
+            Pageable pageable) {
+        return ResponseEntity.ok(produtoService.buscarPorPreco(precoMin, precoMax, pageable));
     }
 
 }

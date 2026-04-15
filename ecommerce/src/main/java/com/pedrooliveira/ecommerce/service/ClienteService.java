@@ -3,10 +3,15 @@ package com.pedrooliveira.ecommerce.service;
 
 import com.pedrooliveira.ecommerce.exception.ResourceNotFoundException;
 import com.pedrooliveira.ecommerce.model.Cliente;
+import com.pedrooliveira.ecommerce.model.Produto;
 import com.pedrooliveira.ecommerce.repository.ClienteRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 
@@ -40,4 +45,9 @@ public class ClienteService {
         cliente.setCpf(clienteAtualizado.getCpf());
         return clienteRepository.save(cliente);
     }
+
+    public Page<Cliente> listarTodos(Pageable pageable) {
+        return clienteRepository.findAll(pageable);
+    }
+
 }
