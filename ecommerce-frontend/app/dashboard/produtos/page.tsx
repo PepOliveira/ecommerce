@@ -35,7 +35,16 @@ export default function ProdutosPage() {
         try {
             setLoading(true);
             const data = await produtoService.buscarPorNome(busca, page);
-            setProdutos(data.content || []);
+            let resultados = data.content || [];
+
+            // Se preço também estiver preenchido, filtra os resultados pelo range
+            if (precoMin && precoMax) {
+                const min = parseFloat(precoMin);
+                const max = parseFloat(precoMax);
+                resultados = resultados.filter(p => p.preco >= min && p.preco <= max);
+            }
+
+            setProdutos(resultados);
             setTotalPaginas(data.totalPages || 0);
             setPagina(page);
             setModo('nome');
@@ -48,6 +57,13 @@ export default function ProdutosPage() {
 
     async function buscarPorPreco(page = 0) {
         if (!precoMin || !precoMax) return;
+
+        // Se nome também estiver preenchido, usa busca por nome e filtra por preço
+        if (busca.trim()) {
+            buscarPorNome(page);
+            return;
+        }
+
         try {
             setLoading(true);
             const data = await produtoService.buscarPorPreco(

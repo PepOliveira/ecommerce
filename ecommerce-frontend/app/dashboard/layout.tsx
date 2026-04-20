@@ -6,6 +6,7 @@ import { authService } from '@/services/authService';
 import Link from 'next/link';
 
 const navItems = [
+     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/dashboard/produtos', label: 'Produtos', icon: '📦' },
     { href: '/dashboard/clientes', label: 'Clientes', icon: '👥' },
     { href: '/dashboard/pedidos', label: 'Pedidos', icon: '🛒' },
@@ -23,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
-            {/* Sidebar */}
+         
             <aside className="w-60 bg-white border-r border-slate-200 flex flex-col fixed h-full">
                 <div className="px-6 py-5 border-b border-slate-100">
                     <span className="text-lg font-bold text-indigo-600 tracking-tight">E-commerce</span>
@@ -61,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             </aside>
 
-            {/* Conteúdo */}
+           
             <main className="flex-1 ml-60 p-8">
                 {children}
             </main>

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     Page<Produto> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-
     Page<Produto> findByPrecoBetween(Double precoMin, Double precoMax, Pageable pageable);
-}
 
+    Long countByEstoqueLessThan(int estoque);
+}
