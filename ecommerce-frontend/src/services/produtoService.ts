@@ -29,5 +29,10 @@ export const produtoService = {
     async buscarPorNome(nome: string, page = 0): Promise<PageResponse<Produto>> {
         const response = await api.get(`/produtos/buscar?nome=${nome}&page=${page}`);
         return response.data;
+    },
+
+    async buscarPorPreco(precoMin: number, precoMax: number, page = 0): Promise<PageResponse<Produto>> {
+    const response = await api.get(`/produtos/preco?precoMin=${precoMin}&precoMax=${precoMax}&page=${page}`);
+    return response.data;
     }
 };
