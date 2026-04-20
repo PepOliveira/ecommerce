@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { pedidoService } from '@/services/pedidoService';
 import { clienteService } from '@/services/clienteService';
 import { produtoService } from '@/services/produtoService';
@@ -87,26 +88,29 @@ export default function NovoPedidoPage() {
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-6">
-                <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-700 text-sm">
+            <div className="flex items-center gap-2 mb-6">
+                <Link href="/dashboard/pedidos" className="text-slate-400 hover:text-slate-600 text-sm transition">
                     ← Voltar
-                </button>
-                <h1 className="text-2xl font-bold text-gray-800">Novo Pedido</h1>
+                </Link>
+                <span className="text-slate-300">/</span>
+                <h1 className="text-xl font-bold text-slate-800">Novo Pedido</h1>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="bg-white rounded-xl border border-slate-200 p-6">
                     {erro && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">{erro}</div>
+                        <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg mb-5 text-sm">
+                            {erro}
+                        </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Cliente</label>
                             <select
                                 value={clienteId}
                                 onChange={(e) => setClienteId(e.target.value)}
-                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             >
                                 <option value="">Selecione um cliente</option>
                                 {clientes.map(c => (
@@ -115,20 +119,20 @@ export default function NovoPedidoPage() {
                             </select>
                         </div>
 
-                        <div className="border-t pt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <div className="border-t border-slate-100 pt-5">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
                                 Adicionar produto
                             </label>
                             <div className="flex gap-2">
                                 <select
                                     value={produtoSelecionado}
                                     onChange={(e) => setProdutoSelecionado(e.target.value)}
-                                    className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1 border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                                 >
                                     <option value="">Selecione um produto</option>
                                     {produtos.map(p => (
                                         <option key={p.id} value={p.id}>
-                                            {p.nome} — R$ {p.preco.toFixed(2)}
+                                            {p.nome} — {p.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                         </option>
                                     ))}
                                 </select>
@@ -137,13 +141,13 @@ export default function NovoPedidoPage() {
                                     value={quantidade}
                                     onChange={(e) => setQuantidade(Number(e.target.value))}
                                     min="1"
-                                    className="w-16 border border-gray-300 rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-16 border border-slate-300 rounded-lg px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                                 />
                                 <button
                                     type="button"
                                     onClick={adicionarItem}
                                     disabled={!produtoSelecionado}
-                                    className="px-3 py-2 bg-gray-100 rounded-md text-sm hover:bg-gray-200 disabled:opacity-50"
+                                    className="px-3 py-2.5 bg-slate-100 rounded-lg text-sm font-medium hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition"
                                 >
                                     +
                                 </button>
@@ -153,35 +157,35 @@ export default function NovoPedidoPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+                            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Criando...' : 'Criar Pedido'}
                         </button>
                     </form>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="font-medium text-gray-800 mb-4">Itens do pedido</h2>
+                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                    <h2 className="text-sm font-semibold text-slate-700 mb-4">Itens do pedido</h2>
 
                     {itens.length === 0 ? (
-                        <p className="text-gray-500 text-sm">Nenhum item adicionado</p>
+                        <p className="text-slate-400 text-sm">Nenhum item adicionado</p>
                     ) : (
                         <div className="space-y-3">
                             {itens.map((item) => (
-                                <div key={item.produto.id} className="flex items-center justify-between border-b pb-2">
+                                <div key={item.produto.id} className="flex items-center justify-between border-b border-slate-100 pb-3">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-800">{item.produto.nome}</p>
-                                        <p className="text-xs text-gray-500">
-                                            {item.quantidade}x R$ {item.produto.preco.toFixed(2)}
+                                        <p className="text-sm font-medium text-slate-800">{item.produto.nome}</p>
+                                        <p className="text-xs text-slate-400 mt-0.5">
+                                            {item.quantidade}x {item.produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-sm font-medium text-gray-800">
-                                            R$ {(item.produto.preco * item.quantidade).toFixed(2)}
+                                        <span className="text-sm font-medium text-slate-800">
+                                            {(item.produto.preco * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                         </span>
                                         <button
                                             onClick={() => removerItem(item.produto.id!)}
-                                            className="text-red-400 hover:text-red-600 text-xs"
+                                            className="text-slate-300 hover:text-red-500 text-xs transition"
                                         >
                                             ✕
                                         </button>
@@ -190,8 +194,10 @@ export default function NovoPedidoPage() {
                             ))}
 
                             <div className="flex justify-between pt-2">
-                                <span className="font-medium text-gray-800">Total</span>
-                                <span className="font-bold text-gray-800">R$ {total.toFixed(2)}</span>
+                                <span className="text-sm font-semibold text-slate-700">Total</span>
+                                <span className="text-sm font-bold text-slate-800">
+                                    {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                </span>
                             </div>
                         </div>
                     )}

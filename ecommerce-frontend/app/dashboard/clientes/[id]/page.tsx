@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import { clienteService } from '@/services/clienteService';
 
 export default function EditarClientePage() {
@@ -64,84 +65,76 @@ export default function EditarClientePage() {
     }
 
     if (loading) {
-        return <div className="text-center py-8 text-gray-500">Carregando...</div>;
+        return <div className="flex items-center justify-center py-20 text-slate-400 text-sm">Carregando...</div>;
     }
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-6">
-                <button
-                    onClick={() => router.back()}
-                    className="text-gray-500 hover:text-gray-700 text-sm"
-                >
+            <div className="flex items-center gap-2 mb-6">
+                <Link href="/dashboard/clientes" className="text-slate-400 hover:text-slate-600 text-sm transition">
                     ← Voltar
-                </button>
-                <h1 className="text-2xl font-bold text-gray-800">Editar Cliente</h1>
+                </Link>
+                <span className="text-slate-300">/</span>
+                <h1 className="text-xl font-bold text-slate-800">Editar Cliente</h1>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border p-6 max-w-lg">
+            <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg">
                 {erro && (
-                    <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">
+                    <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg mb-5 text-sm">
                         {erro}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nome
-                        </label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Nome</label>
                         <input
                             type="text"
                             name="nome"
                             value={form.nome}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
-                        </label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                         <input
                             type="email"
                             name="email"
                             value={form.email}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            CPF
-                        </label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">CPF</label>
                         <input
                             type="text"
                             name="cpf"
                             value={form.cpf}
                             onChange={handleChange}
                             placeholder="000.000.000-00"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             required
                         />
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 pt-1">
                         <button
                             type="submit"
                             disabled={salvando}
-                            className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+                            className="flex-1 bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {salvando ? 'Salvando...' : 'Salvar'}
                         </button>
                         <button
                             type="button"
                             onClick={handleDeletar}
-                            className="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition"
+                            className="px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition"
                         >
                             Deletar
                         </button>

@@ -1,30 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { pedidoService } from '@/services/pedidoService';
 import { Pedido } from '@/types';
 
 const STATUS_OPTIONS = [
-    'AGUARDANDO_PAGAMENTO',
-    'PAGO',
-    'EM_SEPARACAO',
-    'ENVIADO',
-    'ENTREGUE',
-    'CANCELADO',
+    { value: 'AGUARDANDO_PAGAMENTO', label: 'Aguardando Pagamento' },
+    { value: 'PAGO', label: 'Pago' },
+    { value: 'EM_SEPARACAO', label: 'Em Separação' },
+    { value: 'ENVIADO', label: 'Enviado' },
+    { value: 'ENTREGUE', label: 'Entregue' },
+    { value: 'CANCELADO', label: 'Cancelado' },
 ];
 
-const STATUS_CORES: Record<string, string> = {
-    AGUARDANDO_PAGAMENTO: 'bg-yellow-100 text-yellow-700',
-    PAGO: 'bg-blue-100 text-blue-700',
-    EM_SEPARACAO: 'bg-purple-100 text-purple-700',
-    ENVIADO: 'bg-orange-100 text-orange-700',
-    ENTREGUE: 'bg-green-100 text-green-700',
-    CANCELADO: 'bg-red-100 text-red-700',
+const STATUS_LABELS: Record<string, { label: string; className: string }> = {
+    AGUARDANDO_PAGAMENTO: { label: 'Aguardando Pagamento', className: 'bg-amber-50 text-amber-700 border border-amber-200' },
+    PAGO: { label: 'Pago', className: 'bg-blue-50 text-blue-700 border border-blue-200' },
+    EM_SEPARACAO: { label: 'Em Separação', className: 'bg-purple-50 text-purple-700 border border-purple-200' },
+    ENVIADO: { label: 'Enviado', className: 'bg-indigo-50 text-indigo-700 border border-indigo-200' },
+    ENTREGUE: { label: 'Entregue', className: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+    CANCELADO: { label: 'Cancelado', className: 'bg-red-50 text-red-700 border border-red-200' },
 };
 
 export default function DetalhesPedidoPage() {
-    const router = useRouter();
     const params = useParams();
     const id = Number(params.id);
     const [pedido, setPedido] = useState<Pedido | null>(null);
@@ -52,6 +52,7 @@ export default function DetalhesPedidoPage() {
     async function handleAtualizarStatus() {
         if (!pedido || novoStatus === pedido.status) return;
         setAtualizando(true);
+        setErro('');
         try {
             const atualizado = await pedidoService.atualizarStatus(id, novoStatus);
             setPedido(atualizado);
@@ -62,63 +63,83 @@ export default function DetalhesPedidoPage() {
         }
     }
 
-    if (loading) return <div className="text-center py-8 text-gray-500">Carregando...</div>;
-    if (!pedido) return <div className="text-center py-8 text-red-500">{erro}</div>;
+    if (loading) {
+        return <div className="flex items-center justify-center py-20 text-slate-400 text-sm">Carregando...</div>;
+    }
+
+    if (!pedido) {
+        return (
+            <div className="flex items-center justify-center py-20 text-red-500 text-sm">
+                {erro || 'Pedido não encontrado'}
+            </div>
+        );
+    }
+
+    const statusInfo = STATUS_LABELS[pedido.status] ?? { label: pedido.status.replace(/_/g, ' '), className: 'bg-slate-50 text-slate-600 border border-slate-200' };
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-6">
-                <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-700 text-sm">
+            <div className="flex items-center gap-2 mb-6">
+                <Link href="/dashboard/pedidos" className="text-slate-400 hover:text-slate-600 text-sm transition">
                     ← Voltar
-                </button>
-                <h1 className="text-2xl font-bold text-gray-800">Pedido #{pedido.id}</h1>
-                <span className={`px-2 py-1 rounded-full text-xs ${STATUS_CORES[pedido.status]}`}>
-                    {pedido.status.replace(/_/g, ' ')}
+                </Link>
+                <span className="text-slate-300">/</span>
+                <h1 className="text-xl font-bold text-slate-800">Pedido #{pedido.id}</h1>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.className}`}>
+                    {statusInfo.label}
                 </span>
             </div>
 
+            {erro && (
+                <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg mb-5 text-sm">
+                    {erro}
+                </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="font-medium text-gray-800 mb-4">Informações</h2>
-                    <div className="space-y-2 text-sm">
+                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                    <h2 className="text-sm font-semibold text-slate-700 mb-4">Informações</h2>
+                    <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
-                            <span className="text-gray-500">Cliente</span>
-                            <span className="text-gray-800">{pedido.cliente.nome}</span>
+                            <span className="text-slate-400">Cliente</span>
+                            <span className="font-medium text-slate-800">{pedido.cliente.nome}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-gray-500">Email</span>
-                            <span className="text-gray-800">{pedido.cliente.email}</span>
+                            <span className="text-slate-400">Email</span>
+                            <span className="text-slate-600">{pedido.cliente.email}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-gray-500">Data</span>
-                            <span className="text-gray-800">
+                            <span className="text-slate-400">Data</span>
+                            <span className="text-slate-600">
                                 {new Date(pedido.dataPedido).toLocaleDateString('pt-BR')}
                             </span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Total</span>
-                            <span className="font-bold text-gray-800">R$ {pedido.total.toFixed(2)}</span>
+                        <div className="flex justify-between border-t border-slate-100 pt-3 mt-1">
+                            <span className="font-semibold text-slate-700">Total</span>
+                            <span className="font-bold text-slate-800">
+                                {pedido.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            </span>
                         </div>
                     </div>
 
-                    <div className="border-t mt-4 pt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="border-t border-slate-100 mt-5 pt-5">
+                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
                             Atualizar status
                         </label>
                         <div className="flex gap-2">
                             <select
                                 value={novoStatus}
                                 onChange={(e) => setNovoStatus(e.target.value)}
-                                className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="flex-1 border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             >
                                 {STATUS_OPTIONS.map(s => (
-                                    <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+                                    <option key={s.value} value={s.value}>{s.label}</option>
                                 ))}
                             </select>
                             <button
                                 onClick={handleAtualizarStatus}
                                 disabled={atualizando || novoStatus === pedido.status}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 disabled:opacity-50"
+                                className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {atualizando ? '...' : 'Salvar'}
                             </button>
@@ -126,25 +147,27 @@ export default function DetalhesPedidoPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="font-medium text-gray-800 mb-4">Itens</h2>
+                <div className="bg-white rounded-xl border border-slate-200 p-6">
+                    <h2 className="text-sm font-semibold text-slate-700 mb-4">Itens do pedido</h2>
                     <div className="space-y-3">
                         {pedido.itens.map((item) => (
-                            <div key={item.id} className="flex justify-between border-b pb-2">
+                            <div key={item.id} className="flex justify-between border-b border-slate-100 pb-3">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-800">{item.produto.nome}</p>
-                                    <p className="text-xs text-gray-500">
-                                        {item.quantidade}x R$ {item.precoUnitario.toFixed(2)}
+                                    <p className="text-sm font-medium text-slate-800">{item.produto.nome}</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">
+                                        {item.quantidade}x {item.precoUnitario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </p>
                                 </div>
-                                <span className="text-sm font-medium text-gray-800">
-                                    R$ {item.subtotal.toFixed(2)}
+                                <span className="text-sm font-medium text-slate-800">
+                                    {item.subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                 </span>
                             </div>
                         ))}
                         <div className="flex justify-between pt-2">
-                            <span className="font-medium text-gray-800">Total</span>
-                            <span className="font-bold text-gray-800">R$ {pedido.total.toFixed(2)}</span>
+                            <span className="text-sm font-semibold text-slate-700">Total</span>
+                            <span className="text-sm font-bold text-slate-800">
+                                {pedido.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            </span>
                         </div>
                     </div>
                 </div>
